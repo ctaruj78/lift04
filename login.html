@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiftApp - Логін</title>
+    <link rel="stylesheet" href="css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <div class="login-logo">
+        <a href="#"><b>LiftApp</b></a>
+    </div>
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">Увійдіть до системи</p>
+            <form id="login-form">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="username" placeholder="Ім'я користувача" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" id="access-code" placeholder="Код доступу" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-block">Увійти</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+$(document).ready(function() {
+    $('#login-form').on('submit', function(e) {
+        e.preventDefault();
+        const username = $('#username').val().trim();
+        const accessCode = $('#access-code').val().trim();
+        loadDataFromLocalStorage();
+        const user = allUsers.find(u => u.username === username && u.accessCode === accessCode);
+        if (user) {
+            currentUser = user;
+            lastActivity = Date.now();
+            saveDataToLocalStorage();
+            logAction('Успішний вхід', username);
+            toastr.success('Вхід успішний!');
+            location.href = 'index.html';
+        } else {
+            toastr.error('Невірне ім’я користувача або код доступу!');
+        }
+    });
+});
+</script>
+<script src="js/adminlte.min.js"></script>
+</body>
+</html>

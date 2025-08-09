@@ -1,0 +1,13 @@
+{
+    "name": "andriy/liftapp",
+    "description": "liftapp project for managing lifts",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "andriy"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}

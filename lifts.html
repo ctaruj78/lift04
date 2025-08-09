@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>LiftApp - Ліфти</title>
+    <link rel="stylesheet" href="css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .modal-lg { max-width: 90%; }
+        .photo-item { display: inline-block; margin: 5px; }
+        .photo-item img { max-width: 100px; }
+        .serial-inputs { max-height: 200px; overflow-y: auto; }
+        @media (max-width: 768px) {
+            .modal-lg { max-width: 95%; }
+            .modal-body { max-height: 60vh; overflow-y: auto; }
+            .photo-item img { max-width: 80px; }
+            .table-responsive { font-size: 0.9em; }
+            .serial-inputs { max-height: 150px; }
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a id="logout-button" class="nav-link" href="#">Вийти <i class="fas fa-sign-out-alt"></i></a>
+            </li>
+        </ul>
+    </nav>
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="index.html" class="brand-link">
+            <span class="brand-text font-weight-light">LiftApp</span>
+        </a>
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link"><i class="nav-icon fas fa-tachometer-alt"></i><p class="translate-dashboard">Дашборд</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin,tech,client">
+                        <a href="lifts.html" class="nav-link active"><i class="nav-icon fas fa-elevator"></i><p class="translate-lifts">Ліфти</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin">
+                        <a href="users.html" class="nav-link"><i class="nav-icon fas fa-users"></i><p class="translate-users">Користувачі</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin,tech,client">
+                        <a href="requests.html" class="nav-link"><i class="nav-icon fas fa-file-alt"></i><p class="translate-requests">Заявки</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin">
+                        <a href="logs.html" class="nav-link"><i class="nav-icon fas fa-history"></i><p class="translate-logs">Журнал</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin,tech">
+                        <a href="map.html" class="nav-link"><i class="nav-icon fas fa-map"></i><p class="translate-map">Карта</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin,tech">
+                        <a href="qrcodes.html" class="nav-link"><i class="nav-icon fas fa-qrcode"></i><p class="translate-qrcodes">QR-коди</p></a>
+                    </li>
+                    <li class="nav-item role-based" data-role="admin">
+                        <a href="reports.html" class="nav-link"><i class="nav-icon fas fa-chart-pie"></i><p class="translate-reports">Звіти</p></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link"><i class="nav-icon fas fa-cog"></i><p>Налаштування</p></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <h1 class="translate-lifts">Ліфти</h1>
+            </div>
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title translate-lifts">Список ліфтів</h3>
+                        <div class="card-tools">
+                            <input type="text" id="search-lift" class="form-control" placeholder="Пошук за адресою, клієнтом або моделлю">
+                            <button id="add-lift" class="btn btn-primary mt-2">Додати ліфт</button>
+                        </div>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table id="lifts-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th class="translate-address">Адреса</th>
+                                    <th>Модель</th>
+                                    <th>Статус</th>
+                                    <th>Клієнт</th>
+                                    <th class="translate-actions">Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lifts-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title translate-lift-stats">Статистика ліфтів</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="lift-stats-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="modal fade" id="addLiftModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="liftModalTitle">Додати ліфт(и)</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-lift-form">
+                        <div class="form-group">
+                            <label>Адреса</label>
+                            <input type="text" class="form-control" id="lift-address" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Поштовий індекс</label>
+                            <input type="text" class="form-control" id="lift-postal-code" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Кількість ліфтів за адресою</label>
+                            <input type="number" class="form-control" id="lift-lift-count" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Серійні номери ліфтів</label>
+                            <div id="lift-serial-inputs" class="serial-inputs">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control lift-serial" placeholder="Серійний номер ліфта 1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Марка</label>
+                            <input type="text" class="form-control" id="lift-brand" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Клієнт</label>
+                            <select class="form-control" id="lift-client"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Емейл клієнта</label>
+                            <input type="email" class="form-control" id="lift-client-email">
+                        </div>
+                        <div class="form-group">
+                            <label>Координати</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="number" step="any" class="form-control" id="lift-lat" placeholder="Широта">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" step="any" class="form-control" id="lift-lng" placeholder="Довгота">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-info mt-2" id="geocode-button">Отримати координати</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" id="save-lift">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editLiftModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Редагувати ліфт</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-lift-form">
+                        <input type="hidden" id="edit-lift-id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Адреса</label>
+                                    <input type="text" class="form-control" id="edit-lift-address" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Поштовий індекс</label>
+                                    <input type="text" class="form-control" id="edit-lift-postal-code" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Серійний номер</label>
+                                    <input type="text" class="form-control" id="edit-lift-serial">
+                                </div>
+                                <div class="form-group">
+                                    <label>Марка</label>
+                                    <input type="text" class="form-control" id="edit-lift-brand" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Пасажиромісткість</label>
+                                    <input type="number" class="form-control" id="edit-lift-capacity">
+                                </div>
+                                <div class="form-group">
+                                    <label>Швидкість (м/с)</label>
+                                    <input type="number" step="0.1" class="form-control" id="edit-lift-speed">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Статус</label>
+                                    <select class="form-control" id="edit-lift-status">
+                                        <option value="active">Активний</option>
+                                        <option value="maintenance">На обслуговуванні</option>
+                                        <option value="out_of_service">Не працює</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Клієнт</label>
+                                    <select class="form-control" id="edit-lift-client"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Емейл клієнта</label>
+                                    <input type="email" class="form-control" id="edit-lift-client-email">
+                                </div>
+                                <div class="form-group">
+                                    <label>Технік</label>
+                                    <select class="form-control" id="edit-lift-tech"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Широта</label>
+                                    <input type="number" step="any" class="form-control" id="edit-lift-lat">
+                                </div>
+                                <div class="form-group">
+                                    <label>Довгота</label>
+                                    <input type="number" step="any" class="form-control" id="edit-lift-lng">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Дата останньої інспекції</label>
+                            <input type="date" class="form-control" id="edit-lift-last-inspection">
+                        </div>
+                        <div class="form-group">
+                            <label>Періодичність інспекції (місяці)</label>
+                            <input type="number" class="form-control" id="edit-lift-inspection-frequency">
+                        </div>
+                        <div class="form-group">
+                            <label>Звіт (PDF)</label>
+                            <input type="file" class="form-control" id="edit-lift-report" accept="application/pdf">
+                        </div>
+                        <div class="form-group">
+                            <label>Фотографії</label>
+                            <input type="file" class="form-control" id="edit-lift-photos" accept="image/jpeg,image/png" multiple>
+                            <div id="photo-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Історія втручань</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="new-intervention" placeholder="Опис втручання">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary" id="add-intervention">Додати</button>
+                                </div>
+                            </div>
+                            <div id="intervention-history"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>QR-код</label>
+                            <div id="qr-code"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" id="save-edit-lift">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="main-footer">
+        LiftApp © 2025
+    </footer>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/lifts.js"></script>
+<script src="js/adminlte.min.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('Service Worker registered'))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    }
+</script>
+</body>
+</html>
